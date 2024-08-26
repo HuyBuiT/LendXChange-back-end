@@ -1,0 +1,40 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - default
+    restart: always
+
+  service:
+    image: backend
+    build:
+      context: .
+    container_name: backend
+    ports:
+      - '8080:3000'
+    env_file:
+      - .env
+    volumes:
+      - service_log:/var/log/ensofi
+    networks:
+      - default
+    restart: always
+    environment:
+      WAIT_HOSTS:
+
+volumes:
+  pg_data:
+  service_log:
+
+networks:
+  default:

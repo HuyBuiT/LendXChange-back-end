@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd
+                        http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd">
+    <changeSet author="anhtt" id="1">
+        <createView viewName="offer_template_view" replaceIfExists="true">
+            SELECT o.template_id as id,
+                    MAX(o.interest_rate) as max_interest_rate,
+                    MIN(o.interest_rate) as min_interest_rate
+            FROM offer o
+            WHERE o.is_active = true AND o.offer_id IS NOT NULL
+            GROUP BY o.template_id
+        </createView>
+    </changeSet>
+
+    <changeSet author="anhtt" id="2">
+        <createView viewName="latest_loan_event_view" replaceIfExists="true">
+            SELECT le.* from (
+                SELECT *,
+                    RANK() OVER (
+                        PARTITION BY loan_offer_id
+                        ORDER BY created_at DESC
+                    ) as date_rank
+                FROM loan_event
+            ) le
+            WHERE le.date_rank = 1
+        </createView>
+    </changeSet>
+
+    <changeSet author="anhtt" id="3">
+        <createView viewName="offer_template_view" replaceIfExists="true">
+            SELECT o.template_id as id,
+            MAX(o.interest_rate) as max_interest_rate,
+            MIN(o.interest_rate) as min_interest_rate
+            FROM offer o
+            WHERE o.status = 'Created' AND o.offer_id IS NOT NULL
+            GROUP BY o.template_id
+        </createView>
+    </changeSet>
+
+</databaseChangeLog>

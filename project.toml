@@ -1,0 +1,16 @@
+[_]
+schema-version = "0.2"
+id = "finance.enso.web-service"
+name = "Web Service"
+version = "1.0.0"
+
+[io.buildpacks]
+include = [
+	"src/",
+	"package.json",
+  "nest-cli.json",
+  "tsconfig.json",
+	"tsconfig.build.json"
+]
+
+builder = "heroku/builder:20"

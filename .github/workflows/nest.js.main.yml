@@ -1,0 +1,35 @@
+name: NestJS Main
+
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+  on-main:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        id: setup-node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+
+          #      - name: NestJs Unittest
+          #        run: yarn test:cov --passWithNoTests
+
+      - name: Docker build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: localhost:5000/ensofi/ensofi_service:latest
