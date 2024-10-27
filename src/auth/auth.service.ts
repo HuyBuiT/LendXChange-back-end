@@ -66,7 +66,6 @@ export class AuthService {
     if (isNil(nonce)) {
       throw new UnauthorizedException('Expired nonce');
     }
-
     if (
       !(await verifyMessageSignature(network, nonce, signature, walletAddress))
     ) {
