@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { trim } from 'lodash';
 import { PagingRequest } from '../common/common.component';
-import { LoanStatus } from '../common/common.enum';
+import { LoanStatus, Network } from '../common/common.enum';
 
 export class ListLoanRequest extends PagingRequest {
   @ApiPropertyOptional()
@@ -160,4 +160,32 @@ export interface LiquidatedCollateralEvent {
   name: string;
   timestamp: Date;
   signatures: string[];
+}
+
+export class ActiveLoansDashboardRequest extends PagingRequest {
+  @ApiProperty()
+  templateId: string;
+
+  @ApiProperty()
+  network: Network;
+}
+
+export class ActiveLoansDashboardDTO {
+  @ApiProperty()
+  borrowOfferId: string;
+
+  @ApiProperty()
+  borrowerAddress: string;
+
+  @ApiProperty()
+  interestPercent: number;
+
+  @ApiProperty()
+  lendOfferId: string;
+
+  @ApiProperty()
+  lenderAddress: string;
+
+  @ApiProperty()
+  startDate: Date;
 }

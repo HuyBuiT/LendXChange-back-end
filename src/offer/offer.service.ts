@@ -4,11 +4,15 @@ import { isNotEmpty } from 'class-validator';
 import { Duration, sub } from 'date-fns';
 import { isEmpty, isNil, map } from 'lodash';
 import { PagingRequest } from 'src/common/common.component';
-import { LoanStatus, OfferStatus } from 'src/common/common.enum';
+import { LoanStatus, OfferStatus, SortDirection } from 'src/common/common.enum';
 import { Loan } from 'src/loan/loan.entity';
 import { Repository } from 'typeorm';
 import { Offer, OfferTemplate, OfferTemplateView } from './offer.entity';
-import { ListOfferRequest, SummaryOfferDashboardDTO } from './offer.type';
+import {
+  BestOffersDashboardRequest,
+  ListOfferRequest,
+  SummaryOfferDashboardDTO,
+} from './offer.type';
 
 @Injectable()
 export class OfferService {
@@ -228,5 +232,36 @@ export class OfferService {
       totalOpenOffersValue: Number(offerSummary.totalOpenOffersValue),
       totalOpenOffersContracts: Number(offerSummary.totalOpenOffersContracts),
     };
+  }
+
+  async getBestOffersDashboard(
+    params: BestOffersDashboardRequest,
+  ): Promise<[Offer[], number]> {
+    const { templateId, network, pagination } = params;
+    const [pageNum, pageSize, sort] = pagination;
+
+    const query = this.offerRepository
+      .createQueryBuilder('offer')
+      .leftJoin('offer.account', 'account')
+      .innerJoin('offer.offerTemplate', 'offerTemplate')
+      .where('offer.network = :network', { network })
+      .andWhere('offer.status = :status', { status: OfferStatus.CREATED })
+      .andWhere('offerTemplate.id = :templateId', { templateId })
+      .select([
+        'offer.id',
+        'offer.offerId',
+        'account.walletAddress',
+        'offer.interestRate',
+      ]);
+
+    const orderBy = isEmpty(sort)
+      ? { 'offer.interestRate': SortDirection.ASC }
+      : sort;
+
+    return query
+      .orderBy(orderBy)
+      .take(pageSize)
+      .skip(pageNum * pageSize)
+      .getManyAndCount();
   }
 }

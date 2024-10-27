@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PagingRequest } from 'src/common/common.component';
-import { OfferStatus } from '../common/common.enum';
+import { Network, OfferStatus } from '../common/common.enum';
 
 export class OfferEventDTO {
   @ApiProperty()
@@ -84,4 +84,22 @@ export class SummaryOfferDashboardDTO {
   totalOpenOffersValue: number;
   @ApiProperty()
   totalOpenOffersContracts: number;
+}
+
+export class BestOffersDashboardRequest extends PagingRequest {
+  @ApiProperty()
+  templateId: string;
+  @ApiProperty()
+  network: Network;
+}
+
+export class BestOffersDasboardDTO {
+  @ApiProperty()
+  lenderAddress: string;
+
+  @ApiProperty()
+  lendOfferId: string;
+
+  @ApiProperty()
+  interestPercent: number;
 }

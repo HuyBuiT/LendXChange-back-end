@@ -82,6 +82,10 @@ export class Offer extends AbstractEntity {
   @OneToMany(() => OfferEvent, (event) => event.offer)
   @JoinColumn({ name: 'offer_id', referencedColumnName: 'offerId' })
   events: Relation<OfferEvent[]>;
+
+  @JoinColumn({ name: 'template_id', referencedColumnName: 'id' })
+  @ManyToOne(() => OfferTemplate)
+  offerTemplate: OfferTemplate;
 }
 
 @Entity({ name: 'offer_event' })

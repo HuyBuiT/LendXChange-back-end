@@ -1,9 +1,11 @@
+import { Offer } from 'src/offer/offer.entity';
 import {
   Column,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   Relation,
 } from 'typeorm';
@@ -136,6 +138,10 @@ export class Loan extends AbstractEntity {
   @OneToMany(() => LiquidationEvent, (event) => event.loan)
   @JoinColumn({ name: 'loanOfferId', referencedColumnName: 'loanOfferId' })
   liquidationEvents: LiquidationEvent[];
+
+  @OneToOne(() => Offer)
+  @JoinColumn({ name: 'lend_offer_id', referencedColumnName: 'offerId' })
+  offer: Offer;
 }
 
 @Entity({ name: 'loan_event' })

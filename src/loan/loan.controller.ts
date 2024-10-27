@@ -15,7 +15,13 @@ import {
   Payment,
 } from './loan.entity';
 import { LoanService } from './loan.service';
-import { ListLoanRequest, LoanDTO, SummaryLoanDashboardDTO } from './loan.type';
+import {
+  ActiveLoansDashboardDTO,
+  ActiveLoansDashboardRequest,
+  ListLoanRequest,
+  LoanDTO,
+  SummaryLoanDashboardDTO,
+} from './loan.type';
 
 @ApiTags('loans')
 @ApiExtraModels(LoanDTO)
@@ -108,6 +114,32 @@ export class LoanController {
 
     return {
       pageData: pageData,
+      pageNum: params.pageNum,
+      total: count,
+    };
+  }
+
+  @ApiPaginatedResponse(ActiveLoansDashboardDTO)
+  @ApiSortQuery('loan')
+  @Get('/active-loans')
+  async activeLoansByTemplateId(
+    @Query() params: ActiveLoansDashboardRequest,
+  ): Promise<PagingResponse<ActiveLoansDashboardDTO>> {
+    const [loans, count] = await this.loanService.getActiveLoansDashboard(
+      params,
+    );
+
+    return {
+      pageData: map(loans, (loan) => {
+        return {
+          borrowOfferId: loan.loanOfferId,
+          borrowerAddress: loan.borrowerAccount.walletAddress,
+          interestPercent: loan.interestRate,
+          lendOfferId: loan.lendOfferId,
+          lenderAddress: loan.lenderAccount.walletAddress,
+          startDate: loan.startDate,
+        };
+      }),
       pageNum: params.pageNum,
       total: count,
     };

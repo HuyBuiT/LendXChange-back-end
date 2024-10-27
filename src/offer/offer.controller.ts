@@ -11,6 +11,8 @@ import { AccessTokenGuard } from '../auth/auth.guard';
 import { Offer, OfferEvent } from './offer.entity';
 import { OfferService } from './offer.service';
 import {
+  BestOffersDasboardDTO,
+  BestOffersDashboardRequest,
   ListOfferRequest,
   OfferDTO,
   OfferTemplateDTO,
@@ -120,6 +122,29 @@ export class OfferController {
       pageData: [],
       pageNum: params.pageNum,
       total: 0,
+    };
+  }
+
+  @ApiPaginatedResponse(BestOffersDasboardDTO)
+  @ApiSortQuery('offer')
+  @Get('/best-offers')
+  async bestOffersByTemplateId(
+    @Query() params: BestOffersDashboardRequest,
+  ): Promise<PagingResponse<BestOffersDasboardDTO>> {
+    const [offers, count] = await this.offerService.getBestOffersDashboard(
+      params,
+    );
+
+    return {
+      pageData: map(offers, (offer) => {
+        return {
+          lenderAddress: offer.account.walletAddress,
+          lendOfferId: offer.offerId,
+          interestPercent: offer.interestRate,
+        };
+      }),
+      pageNum: params.pageNum,
+      total: count,
     };
   }
 

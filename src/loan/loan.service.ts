@@ -1,11 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { isNotEmpty } from 'class-validator';
+import { isEmpty } from 'lodash';
+import { buildOrderBy } from 'src/util/util.query';
 import { Repository } from 'typeorm';
-import { LoanStatus } from '../common/common.enum';
+import { LoanStatus, SortDirection } from '../common/common.enum';
 import { Offer } from '../offer/offer.entity';
 import { LatestLoanEventView, Loan } from './loan.entity';
-import { ListLoanRequest, SummaryLoanDashboardDTO } from './loan.type';
+import {
+  ActiveLoansDashboardRequest,
+  ListLoanRequest,
+  SummaryLoanDashboardDTO,
+} from './loan.type';
 
 @Injectable()
 export class LoanService {
@@ -158,5 +164,40 @@ export class LoanService {
       totalBorrowedValue: Number(data.totalBorrowedValue),
       totalBorrowedContracts: Number(data.totalBorrowedContracts),
     };
+  }
+
+  async getActiveLoansDashboard(
+    params: ActiveLoansDashboardRequest,
+  ): Promise<[loans: Loan[], count: number]> {
+    const { templateId, network } = params;
+    const query = this.LoanRepository.createQueryBuilder('loan')
+      .leftJoin('loan.borrowerAccount', 'borrowerAccount')
+      .leftJoin('loan.lenderAccount', 'lenderAccount')
+      .leftJoin('loan.offer', 'offer')
+      .leftJoin('offer.offerTemplate', 'offerTemplate')
+      .where('loan.network = :network', { network })
+      .andWhere('offerTemplate.id = :templateId', {
+        templateId: templateId,
+      })
+      .select([
+        'loan.id',
+        'loan.loanOfferId',
+        'borrowerAccount.walletAddress',
+        'loan.interestRate',
+        'lenderAccount.walletAddress',
+        'loan.lendOfferId',
+        'loan.startDate',
+        'loan.createdAt',
+      ]);
+
+    const [pageNum, pageSize, sort] = params.pagination;
+
+    return buildOrderBy(
+      query,
+      isEmpty(sort) ? { 'loan.createdAt': SortDirection.DESC } : sort,
+    )
+      .take(pageSize)
+      .skip(pageNum * pageSize)
+      .getManyAndCount();
   }
 }
