@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AssetsModule } from './assets/assets.module';
 import { AuthModule } from './auth/auth.module';
 import { cacheModule } from './config/config.cache';
 import loggerModule from './config/config.logger';
@@ -18,6 +19,7 @@ import { OfferModule } from './offer/offer.module';
     OfferModule,
     LoanModule,
     NotificationSettingModule,
+    AssetsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
