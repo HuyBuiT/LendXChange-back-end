@@ -6,7 +6,7 @@ import { buildOrderBy } from 'src/util/util.query';
 import { Repository } from 'typeorm';
 import { LoanStatus, SortDirection } from '../common/common.enum';
 import { Offer } from '../offer/offer.entity';
-import { LatestLoanEventView, Loan } from './loan.entity';
+import { Loan } from './loan.entity';
 import {
   ActiveLoansDashboardRequest,
   ListLoanRequest,
@@ -24,11 +24,6 @@ export class LoanService {
     const { lenderAddress, borrowerAddress, templateId, isActive, status } =
       params;
     const query = this.LoanRepository.createQueryBuilder('loan')
-      .leftJoinAndSelect(
-        LatestLoanEventView,
-        'latestLoanEvent',
-        'loan.loanOfferId = latestLoanEvent.loanOfferId',
-      )
       .addSelect(
         `CASE
           WHEN loan.status = 'Matched'          THEN 1
@@ -47,7 +42,7 @@ export class LoanService {
           WHEN loan.status = 'Matched'          THEN loan.end_date
           WHEN loan.status = 'FundTransferred'  THEN loan.end_date
           WHEN loan.status = 'Finished'         THEN loan.end_date
-          ELSE "latestLoanEvent".created_at
+          ELSE "loan".created_at
          END
         `,
         'target_date',
