@@ -121,7 +121,12 @@ export class OfferService {
       .andWhere('loan.lendOfferId is null')
       .andWhere('o.status = :status', { status: OfferStatus.CREATED })
       .getMany();
-    return new Map(map(offers, (value: Offer) => [value.templateId, value]));
+    return new Map(
+      map(
+        offers,
+        (value: Offer) => [value.templateId, value] as [string, Offer],
+      ),
+    );
   }
 
   async getTemplateIdForVolumes(

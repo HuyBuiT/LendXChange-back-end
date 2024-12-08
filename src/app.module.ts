@@ -9,6 +9,7 @@ import { dbOrmModuleAsync } from './config/config.typeorm';
 import { LoanModule } from './loan/loan.module';
 import { NotificationSettingModule } from './notification-setting/notification-setting.module';
 import { OfferModule } from './offer/offer.module';
+import { SyncTransactionModule } from './sync-transaction/sync-transaction.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { OfferModule } from './offer/offer.module';
     LoanModule,
     NotificationSettingModule,
     AssetsModule,
+    SyncTransactionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

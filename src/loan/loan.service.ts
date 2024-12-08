@@ -21,7 +21,7 @@ export class LoanService {
   ) {}
 
   async listLoan(params: ListLoanRequest): Promise<[Loan[], number]> {
-    const { lenderAddress, borrowerAddress, templateId, isActive, status } =
+    const { lenderAddress, borrowerAddress, templateId, isActive, statuses } =
       params;
     const query = this.LoanRepository.createQueryBuilder('loan')
       .addSelect(
@@ -81,9 +81,9 @@ export class LoanService {
           });
     }
 
-    if (isNotEmpty(status)) {
-      query.andWhere('loan.status = :status', {
-        status,
+    if (isNotEmpty(statuses)) {
+      query.andWhere('loan.status in (:...statuses)', {
+        statuses,
       });
     }
 

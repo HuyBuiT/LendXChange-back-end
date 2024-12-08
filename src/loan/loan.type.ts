@@ -20,7 +20,7 @@ export class ListLoanRequest extends PagingRequest {
   isActive: boolean;
 
   @ApiPropertyOptional()
-  status: LoanStatus;
+  statuses: LoanStatus[];
 }
 
 export class CollateralDTO {

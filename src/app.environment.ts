@@ -70,3 +70,8 @@ export const REDIS_HOST: string = process.env.REDIS_HOST || 'localhost';
 export const REDIS_PORT: number = parseInt(process.env.REDIS_PORT, 10) || 6379;
 export const REDIS_PASSWORD: string = process.env.REDIS_PASSWORD;
 export const REDIS_DATABASE: number = parseInt(process.env.REDIS_DATABASE);
+
+export const SYNC_TRANSACTION_QUEUE_JOB_OPTIONS = {
+  attempts: 3,
+  delays: 5000,
+};
