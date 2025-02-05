@@ -1,5 +1,11 @@
 import { Controller, Get, Param, Query, Req, UseGuards } from '@nestjs/common';
-import { ApiExtraModels, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiExtraModels,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { isEmpty, map, omit, pick } from 'lodash';
 import {
   ApiPaginatedResponse,
@@ -14,10 +20,13 @@ import {
   BestOffersDasboardDTO,
   BestOffersDashboardRequest,
   ListOfferRequest,
+  LoanBorrowedDTO,
   OfferDTO,
   OfferTemplateDTO,
   SummaryOfferDashboardDTO,
+  SuppliedAssetDTO,
 } from './offer.type';
+import { IRequestInfo } from 'src/common/interfaces/request-info.interface';
 
 @ApiTags('offers')
 @ApiExtraModels(OfferDTO, OfferTemplateDTO, ListOfferRequest)
@@ -155,5 +164,27 @@ export class OfferController {
   ): Promise<SummaryOfferDashboardDTO> {
     const account = req.user;
     return await this.offerService.getSummaryOfferDashboard(account.id);
+  }
+
+  @ApiResponse({ type: SuppliedAssetDTO })
+  @ApiBearerAuth()
+  // @UseGuards(AccessTokenGuard)
+  @Get('supplied-asset')
+  async getTotalLendSupplied(
+    @Req() request: IRequestInfo,
+  ): Promise<SuppliedAssetDTO> {
+    const accountId = request.user.id;
+    return await this.offerService.getTotalLendSupplied(accountId);
+  }
+
+  @ApiResponse({ type: LoanBorrowedDTO })
+  @ApiBearerAuth()
+  // @UseGuards(AccessTokenGuard)
+  @Get('loan-borrowed')
+  async getTotalBorrow(
+    @Req() request: IRequestInfo,
+  ): Promise<LoanBorrowedDTO[]> {
+    const accountId = request.user.id;
+    return await this.offerService.getLoanBorrowed(accountId);
   }
 }

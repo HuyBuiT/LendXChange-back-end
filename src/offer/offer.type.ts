@@ -103,3 +103,75 @@ export class BestOffersDasboardDTO {
   @ApiProperty()
   interestPercent: number;
 }
+
+export class AssetDTO {
+  @ApiProperty()
+  network: string;
+
+  @ApiProperty()
+  symbol: string;
+
+  @ApiProperty()
+  name: string;
+
+  @ApiProperty()
+  decimals: number;
+
+  @ApiProperty()
+  tokenAddress: string;
+
+  @ApiProperty()
+  priceFeedId: string;
+}
+
+export class AssetAmountDTO {
+  @ApiProperty()
+  asset: AssetDTO;
+
+  @ApiProperty()
+  amount: number;
+}
+
+export class LendSuppliedDTO {
+  @ApiProperty()
+  asset: AssetDTO;
+
+  @ApiProperty()
+  lendSuppliedAmount: number;
+
+  @ApiProperty()
+  interestEarnedAmount: number;
+
+  @ApiProperty()
+  activeContractPerAsset: number;
+}
+
+export class CollateralSuppliedDTO {
+  @ApiProperty()
+  asset: AssetDTO;
+
+  @ApiProperty()
+  collateralSuppliedAmount: number;
+}
+
+export class SuppliedAssetDTO {
+  @ApiProperty()
+  lendSupplied: LendSuppliedDTO[];
+
+  @ApiProperty()
+  collateralSupplied: CollateralSuppliedDTO[];
+}
+
+export class LoanBorrowedDTO {
+  @ApiProperty()
+  asset: AssetDTO;
+
+  @ApiProperty()
+  borrowedAmount: number;
+
+  @ApiProperty()
+  interestOwedAmount: number;
+
+  @ApiProperty()
+  activeContractPerAsset: number;
+}
