@@ -168,7 +168,7 @@ export class OfferController {
 
   @ApiResponse({ type: SuppliedAssetDTO })
   @ApiBearerAuth()
-  // @UseGuards(AccessTokenGuard)
+  @UseGuards(AccessTokenGuard)
   @Get('supplied-asset')
   async getTotalLendSupplied(
     @Req() request: IRequestInfo,
@@ -179,7 +179,7 @@ export class OfferController {
 
   @ApiResponse({ type: LoanBorrowedDTO })
   @ApiBearerAuth()
-  // @UseGuards(AccessTokenGuard)
+  @UseGuards(AccessTokenGuard)
   @Get('loan-borrowed')
   async getTotalBorrow(
     @Req() request: IRequestInfo,
