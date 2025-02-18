@@ -187,4 +187,16 @@ export class OfferController {
     const accountId = request.user.id;
     return await this.offerService.getLoanBorrowed(accountId);
   }
+
+  @ApiResponse({ type: SuppliedAssetDTO })
+  @Get('system-supplied-asset')
+  async getSystemTotalLendSupplied(): Promise<SuppliedAssetDTO> {
+    return await this.offerService.getSystemTotalLendSupplied();
+  }
+
+  @ApiResponse({ type: LoanBorrowedDTO })
+  @Get('system-loan-borrowed')
+  async getSystemTotalBorrow(): Promise<LoanBorrowedDTO[]> {
+    return await this.offerService.getSystemLoanBorrowed();
+  }
 }

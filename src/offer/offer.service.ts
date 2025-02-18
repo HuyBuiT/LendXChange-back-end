@@ -383,4 +383,115 @@ export class OfferService {
       };
     });
   }
+
+  async getSystemTotalLendSupplied(): Promise<SuppliedAssetDTO> {
+    const lendSupplied = await this.offerRepository.query(`
+      SELECT 
+        SUM(offer.amount) as total_lend_amount,
+        SUM(
+          offer.amount * offer.interest_rate / 100 * offer.duration / (365 * 24 * 60 *60)
+        ) AS total_interest_earned,
+        COUNT(1) AS total_active_offers,
+        asset.name,
+        asset.symbol,
+        asset.decimals,
+        asset.price_feed_id,
+        asset.token_address,
+        asset.network
+      FROM offer
+      INNER JOIN asset ON offer.asset_id = asset.id
+      LEFT JOIN loan ON offer.offer_id = loan.lend_offer_id
+      WHERE (offer.status = '${OfferStatus.CREATED}' or (offer.status = '${OfferStatus.LOANED}' AND loan.status != '${LoanStatus.FINISHED}'))
+      GROUP BY asset.id
+    `);
+    const collateralSupplied = await this.loanRepository.query(`
+      SELECT 
+        SUM(collateral.amount) as total_collateral_amount,
+        collateral_asset.id,
+        collateral_asset.name,
+        collateral_asset.symbol,
+        collateral_asset.decimals,
+        collateral_asset.price_feed_id,
+        collateral_asset.token_address,
+        collateral_asset.network
+      FROM loan
+      inner join offer on loan.lend_offer_id = offer.offer_id
+      inner join collateral on loan.id = collateral.loan_id
+      inner join asset on loan.asset_id = asset.id
+      inner join asset as collateral_asset on collateral.asset_id = collateral_asset.id
+      WHERE loan.status in ('${LoanStatus.MATCHED}', '${LoanStatus.FUND_TRANSFERRED}')
+      GROUP BY collateral_asset.id
+    `);
+    const lendSuppliedMapped = lendSupplied.map((data) => {
+      return {
+        asset: {
+          network: data.network,
+          symbol: data.symbol,
+          name: data.name,
+          decimals: data.decimals,
+          tokenAddress: data.token_address,
+          priceFeedId: data.price_feed_id,
+        },
+        lendSuppliedAmount: Number(data.total_lend_amount),
+        interestEarnedAmount: Number(data.total_interest_earned),
+        activeContractPerAsset: Number(data.total_active_offers),
+      };
+    });
+    const collateralSuppliedMapped = collateralSupplied.map((data) => {
+      return {
+        asset: {
+          network: data.network,
+          symbol: data.symbol,
+          name: data.name,
+          decimals: data.decimals,
+          tokenAddress: data.token_address,
+          priceFeedId: data.price_feed_id,
+        },
+        collateralSuppliedAmount: Number(data.total_collateral_amount),
+      };
+    });
+
+    return {
+      lendSupplied: lendSuppliedMapped,
+      collateralSupplied: collateralSuppliedMapped,
+    };
+  }
+
+  async getSystemLoanBorrowed(): Promise<LoanBorrowedDTO[]> {
+    const result = await this.loanRepository.query(`
+      SELECT 
+        SUM(loan.amount) as total_loan_amount,
+        SUM(loan.amount * loan.interest_rate / 100 * offer.duration / (365 * 24 * 60 *60)) as total_interest_owed,
+        COUNT(1) as total_active_loan,
+        asset.name,
+        asset.symbol,
+        asset.decimals,
+        asset.price_feed_id,
+        asset.token_address,
+        asset.network
+      FROM loan
+      inner join offer on loan.lend_offer_id = offer.offer_id
+      inner join collateral on loan.id = collateral.loan_id
+      inner join asset on loan.asset_id = asset.id
+      inner join asset as collateral_asset on collateral.asset_id = collateral_asset.id
+      WHERE loan.status in ('${LoanStatus.MATCHED}', '${LoanStatus.FUND_TRANSFERRED}')
+      GROUP BY asset.id
+    `);
+
+    return result.map((data) => {
+      return {
+        asset: {
+          network: data.network,
+          symbol: data.symbol,
+          name: data.name,
+          decimals: data.decimals,
+          tokenAddress: data.token_address,
+          priceFeedId: data.price_feed_id,
+        },
+        borrowedAmount: Number(data.total_loan_amount),
+        interestOwedAmount: Number(data.total_interest_owed),
+        activeContractPerAsset: Number(data.total_active_loan),
+      };
+    });
+  }
 }
