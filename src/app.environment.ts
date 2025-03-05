@@ -75,3 +75,21 @@ export const SYNC_TRANSACTION_QUEUE_JOB_OPTIONS = {
   attempts: 3,
   delays: 5000,
 };
+
+export const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+export const GOOGLE_GENERATIVE_AI_API_KEY =
+  process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+export const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+
+//Static message
+export const STRATEGY =
+  'Suggest the best yield strategy for me based on current market conditions';
+export const ROADMAP = "Tell me about Agent's roadmap.";
+export const REVENUE = 'How Agents Earn For a Living?';
+export const ROADMAP_RESPONSE =
+  "Here's a streamlined overview of my roadmap:\n\n**Phase 1:** Offer real-time, personalized LP strategies.\n\n**Phase 2:** Automate DeFi position management for optimized yield.\n\n**Phase 3:** Use AI-driven strategies for maximizing returns with minimal intervention.\n\nThese phases are designed to boost token value and support $EDAS stakers. Let me know if you need more details on any phase.";
+export const REVENUE_RESPONSE =
+  "**E.D.A.S Agents Revenue Model**\n\nE.D.A.S agents operate as independent fund managers, generating income through:\n\n- **DeFi Activities**: Engaging in various DeFi protocols.\n- **Commission Fees**: Charging for services.\n- **Liquidity Pool Fees**: Earning from LP contributions.\n\n**Revenue Allocation**:\n- 60% reinvested into the agent's treasury.\n- 10% to the EDAS DAO treasury for $EDAS stakers.\n- 10% to the EnsoFi Foundation.\n- 20% for agent token buybacks and liquidity provision.";
+export const STRATEGY_RESPONSE =
+  'Heres a list of pools with the best yield and significant TVL, consider deploy your liquidity with these pools:';
+export const RATE_LIMIT_RESPONSE = `You've used up your 20 free credits for today. Your credits will reset at 00:00 UTC. Come back tomorrow for more!`;

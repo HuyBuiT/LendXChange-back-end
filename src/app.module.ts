@@ -10,6 +10,8 @@ import { LoanModule } from './loan/loan.module';
 import { NotificationSettingModule } from './notification-setting/notification-setting.module';
 import { OfferModule } from './offer/offer.module';
 import { SyncTransactionModule } from './sync-transaction/sync-transaction.module';
+import { AgentModule } from './agents/agent.module';
+import { ColossalModule } from './agents/colossal/colossal.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { SyncTransactionModule } from './sync-transaction/sync-transaction.modul
     NotificationSettingModule,
     AssetsModule,
     SyncTransactionModule,
+    AgentModule,
+    ColossalModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -26,3 +26,15 @@ export enum LoanStatus {
   LIQUIDATING = 'Liquidating',
   LIQUIDATED = 'Liquidated',
 }
+
+export enum AIAgentName {
+  ATTACK = 'attack',
+  AMORED = 'amored',
+  COLOSSAL = 'colossal',
+}
+
+export enum AIAgentProvider {
+  OPEN_AI = 'openai',
+  GOOGLE = 'google',
+  OPEN_ROUTER = 'openrouter',
+}
