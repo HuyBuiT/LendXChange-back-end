@@ -26,21 +26,13 @@ export class ChatClient extends BaseClient {
   }
 
   async generateResponse(params: ChatParams): Promise<JSON> {
-    const { agentId, text, network, accountId } = params;
-    const roomId = stringToUuid('default-room-' + agentId);
+    const { text, walletAddress } = params;
+    const roomId = stringToUuid('default-room-' + walletAddress);
 
-    const userId = stringToUuid(
-      `${accountId}-${network.toLowerCase() || 'default-network'}`,
-    );
+    const userId = stringToUuid(`${walletAddress}-${'default-network'}`);
 
-    let runtime = this.agents.get(agentId);
-
-    // if runtime is null, look for runtime with the same name
-    if (!runtime) {
-      runtime = Array.from(this.agents.values()).find(
-        (a) => a.character.name.toLowerCase() === agentId.toLowerCase(),
-      );
-    }
+    const [firstAgent] = [...this.agents.entries()];
+    const runtime = firstAgent[1];
 
     if (!runtime) {
       throw new Error('Agent not found');
@@ -49,7 +41,7 @@ export class ChatClient extends BaseClient {
     await runtime.ensureConnection(
       userId,
       roomId,
-      accountId, // Use userId for username
+      walletAddress, // Use userId for username
       userId,
       'direct',
     );
@@ -64,9 +56,8 @@ export class ChatClient extends BaseClient {
     const content: Content = {
       text,
       source: 'direct',
-      inReplyTo: undefined,
-      accountId,
-      network,
+      inReplyTo: userId,
+      walletAddress,
     };
 
     const userMessage = {
@@ -91,6 +82,8 @@ export class ChatClient extends BaseClient {
 
     let state = await runtime.composeState(userMessage, {
       agentName: runtime.character.name,
+      walletAddress,
+      text,
     });
 
     const context = composeContext({
@@ -98,6 +91,7 @@ export class ChatClient extends BaseClient {
       template: this.messageHandlerTemplate,
     });
 
+    console.log('context', context);
     let response: Content;
 
     const { answer, needAction } = this.getStaticResponse(text);
