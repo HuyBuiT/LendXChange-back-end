@@ -175,3 +175,31 @@ export class LoanBorrowedDTO {
   @ApiProperty()
   activeContractPerAsset: number;
 }
+
+export class SystemStatisticDTO {
+  @ApiProperty()
+  wallets: number;
+
+  @ApiProperty()
+  offers: number;
+
+  @ApiProperty()
+  loans: number;
+
+  @ApiProperty()
+  activeOffers: number;
+
+  @ApiProperty()
+  activeLoans: number;
+
+  @ApiProperty()
+  transactions: TransactionDTO[];
+}
+
+export class TransactionDTO {
+  @ApiProperty()
+  transactionHash: string;
+
+  @ApiProperty()
+  type: 'Offer' | 'Loan';
+}

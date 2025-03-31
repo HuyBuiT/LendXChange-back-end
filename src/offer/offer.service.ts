@@ -5,16 +5,24 @@ import { Duration, sub } from 'date-fns';
 import { isEmpty, isNil, map } from 'lodash';
 import { PagingRequest } from 'src/common/common.component';
 import { LoanStatus, OfferStatus, SortDirection } from 'src/common/common.enum';
-import { Loan } from 'src/loan/loan.entity';
+import { Loan, LoanEvent } from 'src/loan/loan.entity';
 import { Repository } from 'typeorm';
-import { Offer, OfferTemplate, OfferTemplateView } from './offer.entity';
+import {
+  Offer,
+  OfferEvent,
+  OfferTemplate,
+  OfferTemplateView,
+} from './offer.entity';
 import {
   BestOffersDashboardRequest,
   ListOfferRequest,
   LoanBorrowedDTO,
   SummaryOfferDashboardDTO,
   SuppliedAssetDTO,
+  SystemStatisticDTO,
+  TransactionDTO,
 } from './offer.type';
+import { Account } from 'src/account/account.entity';
 
 @Injectable()
 export class OfferService {
@@ -22,7 +30,13 @@ export class OfferService {
     @InjectRepository(Offer)
     private readonly offerRepository: Repository<Offer>,
     @InjectRepository(Loan)
-    private readonly loanRepository: Repository<Offer>,
+    private readonly loanRepository: Repository<Loan>,
+    @InjectRepository(OfferEvent)
+    private readonly offerEventRepository: Repository<OfferEvent>,
+    @InjectRepository(LoanEvent)
+    private readonly loanEventRepository: Repository<LoanEvent>,
+    @InjectRepository(Account)
+    private readonly accountRepository: Repository<Account>,
     @InjectRepository(OfferTemplate)
     private readonly offerTemplateRepository: Repository<OfferTemplate>,
   ) {}
@@ -493,5 +507,41 @@ export class OfferService {
         activeContractPerAsset: Number(data.total_active_loan),
       };
     });
+  }
+
+  async getSystemStatistics(): Promise<SystemStatisticDTO> {
+    const wallets = await this.accountRepository.count();
+    const offers = await this.offerRepository.count();
+    const loans = await this.loanRepository.count();
+    const activeLoans = await this.loanRepository.countBy({
+      status: LoanStatus.FUND_TRANSFERRED,
+    });
+    const activeOffers = await this.offerRepository.countBy({
+      status: OfferStatus.CREATED,
+    });
+
+    const offerEvent = await this.offerEventRepository.find();
+    const loanEvent = await this.loanEventRepository.find();
+
+    const offerTransaction: TransactionDTO[] = offerEvent.map((event) => {
+      return {
+        transactionHash: event.signature,
+        type: 'Offer',
+      };
+    });
+    const loanTransaction: TransactionDTO[] = loanEvent.map((event) => {
+      return {
+        transactionHash: event.signature,
+        type: 'Loan',
+      };
+    });
+    return {
+      wallets,
+      offers,
+      loans,
+      activeLoans,
+      activeOffers,
+      transactions: [...offerTransaction, ...loanTransaction],
+    };
   }
 }

@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AccountModule } from '../account/account.module';
 import { LoanModule } from '../loan/loan.module';
 import { OfferController } from './offer.controller';
 import {
@@ -11,6 +10,8 @@ import {
 } from './offer.entity';
 import { OfferGateway } from './offer.gateway';
 import { OfferService } from './offer.service';
+import { Account } from 'src/account/account.entity';
+import { Loan, LoanEvent } from 'src/loan/loan.entity';
 
 @Module({
   imports: [
@@ -19,7 +20,10 @@ import { OfferService } from './offer.service';
       OfferTemplateView,
       Offer,
       OfferEvent,
-      AccountModule,
+      LoanEvent,
+      OfferEvent,
+      Account,
+      Loan,
     ]),
     LoanModule,
   ],

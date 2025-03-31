@@ -25,6 +25,7 @@ import {
   OfferTemplateDTO,
   SummaryOfferDashboardDTO,
   SuppliedAssetDTO,
+  SystemStatisticDTO,
 } from './offer.type';
 import { IRequestInfo } from 'src/common/interfaces/request-info.interface';
 
@@ -198,5 +199,11 @@ export class OfferController {
   @Get('system-loan-borrowed')
   async getSystemTotalBorrow(): Promise<LoanBorrowedDTO[]> {
     return await this.offerService.getSystemLoanBorrowed();
+  }
+
+  @ApiResponse({ type: SystemStatisticDTO })
+  @Get('system-statistic')
+  async getSystemStatistic(): Promise<SystemStatisticDTO> {
+    return await this.offerService.getSystemStatistics();
   }
 }
