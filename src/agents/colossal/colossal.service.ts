@@ -7,13 +7,22 @@ import provideLPPoolData from '../common-actions/lp-pool-data/provide-lp-pool-da
 import { ConfigService } from '@nestjs/config';
 import { ChatClient } from '../clients/chat-client';
 import { AIAgentName } from '../../common/common.enum';
+import { LoanDataProvider } from '../providers/loan-data';
 
 @Injectable()
 export class ColossalService extends AgentService implements OnModuleInit {
   private readonly LOAD_COLOSSAL = 'true';
   private readonly TOTAL_COLOSSAL_AGENT = 1;
-  constructor(protected config: ConfigService) {
-    super(config, AIAgentName.COLOSSAL, new ChatClient(messageHandlerTemplate));
+  constructor(
+    protected config: ConfigService,
+    protected loanDataProvider: LoanDataProvider,
+  ) {
+    super(
+      config,
+      AIAgentName.COLOSSAL,
+      new ChatClient(messageHandlerTemplate),
+      loanDataProvider,
+    );
   }
 
   async onModuleInit() {

@@ -12,6 +12,10 @@ import {
   ListLoanRequest,
   SummaryLoanDashboardDTO,
 } from './loan.type';
+import { Cron } from '@nestjs/schedule';
+import * as fs from 'fs';
+import { Parser } from 'json2csv';
+import { BASE_PROVIDER_PATH } from 'src/app.environment';
 
 @Injectable()
 export class LoanService {
@@ -19,6 +23,36 @@ export class LoanService {
     @InjectRepository(Loan)
     private readonly LoanRepository: Repository<Loan>,
   ) {}
+
+  @Cron('*/1 * * * *') //Cronjob run every 5 minutes
+  async handleUpdatePoolData() {
+    const loans = await this.LoanRepository.find({
+      relations: ['lenderAccount', 'borrowerAccount'],
+    });
+
+    // Extract necessary fields
+    const csvData = loans.map((loan) => ({
+      loanAddress: loan.loanOfferId,
+      amount: loan.amount / 1000000,
+      interestRate: loan.interestRate,
+      status: loan.status,
+      startDate: loan.startDate,
+      endDate: loan.endDate,
+      borrowerAddress: loan.lenderAccount.walletAddress,
+      lenderAddress: loan.borrowerAccount.walletAddress, // Adjust based on the actual field structure
+    }));
+
+    // Convert to CSV format
+    const parser = new Parser();
+    const csv = parser.parse(csvData);
+
+    const filePath = BASE_PROVIDER_PATH + 'loan-data.csv';
+
+    console.log('Writing to file:', filePath);
+    // Write to file
+    fs.writeFileSync(filePath, csv);
+    console.log('Updated offer data successfully and saved to loan-data.csv.');
+  }
 
   async listLoan(params: ListLoanRequest): Promise<[Loan[], number]> {
     const { lenderAddress, borrowerAddress, templateId, isActive, statuses } =

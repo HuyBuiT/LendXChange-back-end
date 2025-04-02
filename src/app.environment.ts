@@ -80,7 +80,7 @@ export const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 export const GOOGLE_GENERATIVE_AI_API_KEY =
   process.env.GOOGLE_GENERATIVE_AI_API_KEY;
 export const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
-
+export const BASE_PROVIDER_PATH = process.cwd() + '/dist/resources/';
 //Static message
 export const STRATEGY =
   'Suggest the best yield strategy for me based on current market conditions';

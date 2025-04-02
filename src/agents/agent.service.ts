@@ -23,12 +23,14 @@ import { ConfigService } from '@nestjs/config';
 import { ChatClient } from './clients/chat-client';
 import { ChatParams } from './clients/chat-client/chat-client.type';
 import PostgresDatabaseAdapter from '@elizaos/adapter-postgres';
+// import { LoanDataProvider } from './providers/loan-data';
 
 export abstract class AgentService {
   constructor(
     protected readonly config: ConfigService,
     protected readonly agentName: AIAgentName,
     protected chatClient: ChatClient,
+    protected loanDataProvider: Provider,
   ) {}
 
   private createAgent(
@@ -44,7 +46,7 @@ export abstract class AgentService {
       'Creating runtime for character',
       character.name,
     );
-    const providers: Provider[] = []; // TODO: add offer and loan data provider
+    const providers: Provider[] = [this.loanDataProvider]; // TODO: add offer and loan data provider
     return new AgentRuntime({
       databaseAdapter: db,
       token,

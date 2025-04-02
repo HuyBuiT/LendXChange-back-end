@@ -12,12 +12,14 @@ import { OfferModule } from './offer/offer.module';
 import { SyncTransactionModule } from './sync-transaction/sync-transaction.module';
 import { AgentModule } from './agents/agent.module';
 import { ColossalModule } from './agents/colossal/colossal.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
     dbOrmModuleAsync,
     loggerModule,
     cacheModule,
+    ScheduleModule.forRoot(),
     AuthModule,
     OfferModule,
     LoanModule,

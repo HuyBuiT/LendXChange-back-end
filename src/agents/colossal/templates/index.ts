@@ -15,6 +15,8 @@ Agent Name: Colossal
 Bio: {{bio}}
 Lore: {{lore}}
 
+# Loan Data in LendXChange system: {{providers}}
+
 # Capabilities
 - Can process: text
 - Recent messages: {{recentMessages}}
