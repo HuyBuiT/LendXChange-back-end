@@ -520,28 +520,37 @@ export class OfferService {
       status: OfferStatus.CREATED,
     });
 
-    const offerEvent = await this.offerEventRepository.find();
-    const loanEvent = await this.loanEventRepository.find();
+    // Fetch events ordered by createdAt descending
+    const offerEvent = await this.offerEventRepository.find({
+      order: { createdAt: 'DESC' },
+    });
 
-    const offerTransaction: TransactionDTO[] = offerEvent.map((event) => {
-      return {
-        transactionHash: event.signature,
-        type: 'Offer',
-      };
+    const loanEvent = await this.loanEventRepository.find({
+      order: { createdAt: 'DESC' },
     });
-    const loanTransaction: TransactionDTO[] = loanEvent.map((event) => {
-      return {
-        transactionHash: event.signature,
-        type: 'Loan',
-      };
-    });
+
+    // Map to TransactionDTO with timestamp
+    const offerTransaction: TransactionDTO[] = offerEvent.map((event) => ({
+      transactionHash: event.signature,
+      type: 'Offer',
+      timestamp: event.createdAt,
+    }));
+
+    const loanTransaction: TransactionDTO[] = loanEvent.map((event) => ({
+      transactionHash: event.signature,
+      type: 'Loan',
+      timestamp: event.createdAt,
+    }));
+
     return {
       wallets,
       offers,
       loans,
       activeLoans,
       activeOffers,
-      transactions: [...offerTransaction, ...loanTransaction],
+      transactions: [...offerTransaction, ...loanTransaction].sort(
+        (a, b) => b.timestamp.getTime() - a.timestamp.getTime(),
+      ),
     };
   }
 }

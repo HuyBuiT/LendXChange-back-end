@@ -24,7 +24,7 @@ export class LoanService {
     private readonly LoanRepository: Repository<Loan>,
   ) {}
 
-  @Cron('*/1 * * * *') //Cronjob run every 5 minutes
+  @Cron('*/2 * * * *') //Cronjob run every 5 minutes
   async handleUpdatePoolData() {
     const loans = await this.LoanRepository.find({
       relations: ['lenderAccount', 'borrowerAccount'],
@@ -36,8 +36,26 @@ export class LoanService {
       amount: loan.amount / 1000000,
       interestRate: loan.interestRate,
       status: loan.status,
-      startDate: loan.startDate,
-      endDate: loan.endDate,
+      startDate: new Date(loan.startDate).toLocaleString('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+        timeZone: 'UTC',
+      }),
+      endDate: new Date(loan.endDate).toLocaleString('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+        timeZone: 'UTC',
+      }),
       borrowerAddress: loan.lenderAccount.walletAddress,
       lenderAddress: loan.borrowerAccount.walletAddress, // Adjust based on the actual field structure
     }));

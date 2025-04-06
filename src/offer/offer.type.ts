@@ -201,5 +201,8 @@ export class TransactionDTO {
   transactionHash: string;
 
   @ApiProperty()
+  timestamp: Date;
+
+  @ApiProperty()
   type: 'Offer' | 'Loan';
 }
