@@ -93,11 +93,15 @@ export class LoanController {
   ): Promise<PagingResponse<LoanDTO>> {
     const [loans, count] = await this.loanService.listLoan(params);
     const pageData = map(loans, (loan) => {
+      loan.symbol = 'USDC';
+      loan.network = 'SUI';
       return {
         ...pick(loan, this.DEFAULT_LOAN_FIELDS),
-        collaterals: map(loan.collaterals, (collateral) =>
-          pick(collateral, this.DEFAULT_COLLATERAL_FIELDS),
-        ),
+        collaterals: map(loan.collaterals, (collateral) => {
+          collateral.network = 'SUI';
+          collateral.symbol = 'SUI';
+          return pick(collateral, this.DEFAULT_COLLATERAL_FIELDS);
+        }),
         payments: map(loan.payments, (payment) =>
           pick(payment, this.DEFAULT_PAYMENT_FIELDS),
         ),
